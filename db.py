@@ -9,5 +9,6 @@ def getDBConnection():
 #------close DB connection --------
 def closeDBConnection(con):
 	print("--- closeDBConnection() ---")
-	con.cursor().close()
-	con.close()
+	if con.is_connected():
+		con.cursor().close()
+		con.close()

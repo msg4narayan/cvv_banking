@@ -16,3 +16,5 @@ def isValidEmail(email):
 	regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 	return (bool(re.search(regex, email)))
 
+	
+

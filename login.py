@@ -5,32 +5,39 @@ import db
 import signup
 import util
 import customerDashboard
+import bankadmin
+
+
+loginWindow = ""
+
 
 def close():
+	print("--- Entering login close() ---")
+	global loginWindow
 	loginWindow.destroy()	
 
 
 #------To clear the Fields--------
-def clearCredentials():
+def clearCredentials(userNameEntered,passEntered):
 	print("--- Entering clearCredentials() ---")
 	userNameEntered.set('')
 	passEntered.set('')
-	username_entry.focus()
+	
 #----------------------------------
 
 
 
 #------To Login--------
-def login():
+def login(uname,passwd):
 	print("--- Entering login() ---")
-	uname = userNameEntered.get().strip()
-	pwd = passEntered.get().strip()
-	if uname=="" or pwd.strip()=="":
+	#uname = userNameEntered
+	#pwd = passEntered
+	if uname=="" or passwd.strip()=="":
 		messagebox.showerror("Error","Enter User Name And Password",parent=loginWindow)
-		clearCredentials();	
+		clearCredentials(uname,passwd);	
 	else:
-		pwd = util.encrypt(pwd)
-		validate(uname, pwd)
+		passwd = util.encrypt(passwd)
+		validate(uname, passwd)
 #----------------------------------
 
 
@@ -47,12 +54,15 @@ def validate(uname, pwd):
 
 	if row==None:
 		messagebox.showerror("Error" , "Invalid User Name And Password", parent = loginWindow)
-		clearCredentials()
+		clearCredentials(uname,pwd)
 
 	else:
-		messagebox.showinfo("Success" , "Successfully Login, I will Redirect to your Dashboar (To Do) " , parent = loginWindow)
+		#messagebox.showinfo("Success" , "Successfully Login, I will Redirect to your Dashboard" , parent = loginWindow)
 		close()
-		customerDashboard.loadDashboard(uname)
+		if uname=='admin':
+			bankadmin.loadDashboard(uname)
+		else:	
+			customerDashboard.loadDashboard(uname)
 
 	#Close the DB connection
 	db.closeDBConnection(con)
@@ -66,93 +76,98 @@ def switchToSignUp():
 	signup.loadSignupModule()
 
 
-#-------------------------------UI Code ----------------------------------
-loginWindow = tk.Tk()
-loginWindow.title("Welcome to Financial Crimes")
-#loginWindow.geometry('1024x768')
-#loginWindow.attributes("-fullscreen", True)
-loginWindow.state("zoomed")
+#------Load Login--------
+def loadLogin():
+	print("--- Entering load Login function ---")
 
-# configure the grid
-#loginWindow.columnconfigure(0, weight=1)
-loginWindow.columnconfigure(1, weight=6)
+	#-------------------------------UI Code ----------------------------------
+	global loginWindow
+	loginWindow = tk.Tk()
+	loginWindow.title("Welcome to Financial Crimes  (Login Screen) ")
+	#loginWindow.geometry('1024x768')
+	#loginWindow.attributes("-fullscreen", True)
+	loginWindow.state("zoomed")
 
-
-
-#Logo
-logo = tk.Label(loginWindow,text="Financial Crimes", font="Calibri 43")
-logo.grid(row=0,column=0,sticky="w", ipadx="2", columnspan=6)
-
-# Seperator object
-line_style = ttk.Style()
-line_style.configure("Line.TSeparator", background="#FF0000")
-separator = ttk.Separator(loginWindow, orient='horizontal', style="Line.TSeparator")
-separator.grid(row=1,column=0,columnspan=6, sticky='ew')
+	# configure the grid
+	#loginWindow.columnconfigure(0, weight=1)
+	loginWindow.columnconfigure(1, weight=6)
 
 
-#Error and Message Row
-messageFrame = tk.Frame(loginWindow)
-messageText = Label(messageFrame, text=" ", font="Calibri 16")
-messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
-messageFrame.grid(row=2,column=0,sticky="w")
-messageText.pack(side=TOP);
-messageSpacer.pack(side=TOP);
+
+	#Logo
+	logo = tk.Label(loginWindow,text="Financial Crimes", font="Calibri 43")
+	logo.grid(row=0,column=0,sticky="w", ipadx="2", columnspan=6)
+
+	# Seperator object
+	line_style = ttk.Style()
+	line_style.configure("Line.TSeparator", background="#FF0000")
+	separator = ttk.Separator(loginWindow, orient='horizontal', style="Line.TSeparator")
+	separator.grid(row=1,column=0,columnspan=6, sticky='ew')
 
 
-#username and password entered by user
-userNameEntered = StringVar()
-passEntered = StringVar()
+	#Error and Message Row
+	messageFrame = tk.Frame(loginWindow)
+	messageText = Label(messageFrame, text=" ", font="Calibri 16")
+	messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
+	messageFrame.grid(row=2,column=0,sticky="w")
+	messageText.pack(side=TOP)
+	messageSpacer.pack(side=TOP)
 
 
-userNameFrame = tk.Frame(loginWindow)
-username_label = Label(userNameFrame, text=" Username * ", font="Calibri 16")
-username_entry = Entry(userNameFrame, textvariable=userNameEntered)
-username_entry.focus()
-userNameFrame.grid(row=3,column=0,sticky="w")
-username_label.pack(side=LEFT);
-username_entry.pack(side=LEFT);
+	#username and password entered by user
+	userNameEntered = StringVar()
+	passEntered = StringVar()
 
 
-#Password and Submit Button Frame
-passwordFrame = tk.Frame(loginWindow)
-passwordLabel = Label(passwordFrame,text=" Password *  ", font="Calibri 16")
-passwordEntry = Entry(passwordFrame, textvariable=passEntered, show='*')
-textSpacer = Label(passwordFrame,text="   ")
-loginButton = Button(passwordFrame,text="Login", font="Calibri 12", padx=10, pady=2,command = login)
-clearButton = Button(passwordFrame,text="Clear", font="Calibri 12", padx=10,pady=2,command = clearCredentials)
-passwordFrame.grid(row=4,column=0,sticky="w")
-passwordLabel.pack(side=LEFT);
-passwordEntry.pack(side=LEFT);
-textSpacer.pack(side=LEFT);
-clearButton.pack(side=RIGHT);
-loginButton.pack(side=RIGHT);
+	userNameFrame = tk.Frame(loginWindow)
+	username_label = Label(userNameFrame, text=" Username * ", font="Calibri 16")
+	username_entry = Entry(userNameFrame, textvariable=userNameEntered)
+	username_entry.focus()
+	userNameFrame.grid(row=3,column=0,sticky="w")
+	username_label.pack(side=LEFT)
+	username_entry.pack(side=LEFT)
 
 
-#BlankRow
-blankRow = Label(loginWindow,text=" ", font="Calibri 12")
-blankRow.grid(row=5,column=0,sticky="e")
+	#Password and Submit Button Frame
+	passwordFrame = tk.Frame(loginWindow)
+	passwordLabel = Label(passwordFrame,text=" Password *  ", font="Calibri 16")
+	passwordEntry = Entry(passwordFrame, textvariable=passEntered, show='*')
+	textSpacer = Label(passwordFrame,text="   ")
+	loginButton = Button(passwordFrame,text="Login", font="Calibri 12", padx=10, pady=2,command = lambda: login(userNameEntered.get().strip(),passEntered.get().strip()))
+	clearButton = Button(passwordFrame,text="Clear", font="Calibri 12", padx=10,pady=2,command=lambda: clearCredentials(userNameEntered,passEntered))
+	passwordFrame.grid(row=4,column=0,sticky="w")
+	passwordLabel.pack(side=LEFT)
+	passwordEntry.pack(side=LEFT)
+	textSpacer.pack(side=LEFT)
+	clearButton.pack(side=RIGHT)
+	loginButton.pack(side=RIGHT)
 
 
-#Signup Frame, Lable and Button
-signUpFrame = tk.Frame(loginWindow)
-signUpLabel = Label(signUpFrame,text="New User?", font="Calibri 12")
-signUpButton = Button(signUpFrame,text=" Sign Up ", font="Calibri 12", command = switchToSignUp)
-signUpFrame.grid(row=6,column=0,sticky="w")
-signUpLabel.pack(side=LEFT);
-signUpButton.pack(side=LEFT);
+	#BlankRow
+	blankRow = Label(loginWindow,text=" ", font="Calibri 12")
+	blankRow.grid(row=5,column=0,sticky="e")
 
 
-#BlankRow
-blankRow = Label(loginWindow,text=" ", font="Calibri 12")
-blankRow.grid(row=7,column=0,sticky="e",columnspan=6)
+	#Signup Frame, Lable and Button
+	signUpFrame = tk.Frame(loginWindow)
+	signUpLabel = Label(signUpFrame,text="New User?", font="Calibri 12")
+	signUpButton = Button(signUpFrame,text=" Sign Up ", font="Calibri 12", command = switchToSignUp)
+	signUpFrame.grid(row=6,column=0,sticky="w")
+	signUpLabel.pack(side=LEFT)
+	signUpButton.pack(side=LEFT)
 
 
-# Seperator object
-line_style = ttk.Style()
-line_style.configure("Line.TSeparator", background="#FF0000")
-separator = ttk.Separator(loginWindow, orient='horizontal', style="Line.TSeparator")
-separator.grid(row=8,column=0,columnspan=6, sticky='ew')
+	#BlankRow
+	blankRow = Label(loginWindow,text=" ", font="Calibri 12")
+	blankRow.grid(row=7,column=0,sticky="e",columnspan=6)
 
 
-loginWindow.mainloop()
+	# Seperator object
+	line_style = ttk.Style()
+	line_style.configure("Line.TSeparator", background="#FF0000")
+	separator = ttk.Separator(loginWindow, orient='horizontal', style="Line.TSeparator")
+	separator.grid(row=8,column=0,columnspan=6, sticky='ew')
+
+
+	loginWindow.mainloop()
 

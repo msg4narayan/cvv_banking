@@ -1,9 +1,16 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk,messagebox
+
+from mysql import connector
+import mysql
+from mysql.connector.errors import Error
+from datetime import datetime
+
 import db
 import util
-import customerDashboard
+import login
+
 
 signUpWindow = ""
 
@@ -34,6 +41,12 @@ def validateFields(uname,pwd,accType,fname,lname,phone,email,dob):
 	print("---To do Validate Fields")
 
 
+def switchToLogin():
+	print("--- Entering signup function ---")
+	close()
+	login.loadLogin()
+
+
 #------To signup--------
 def signup(uname,pwd,accType,fname,lname,phone,email,dob):
 	print("--- Entering signup() ---" + uname)
@@ -42,30 +55,55 @@ def signup(uname,pwd,accType,fname,lname,phone,email,dob):
 
 	validateFields(uname,pwd,accType,fname,lname,phone,email,dob)
 
-	#get a DBConnection
-	con = db.getDBConnection()
-	cur = con.cursor()
+	try:
+		#get a DBConnection
+		con = db.getDBConnection()
+		cur = con.cursor()
+		con.autocommit = False #Setting this to false
 
-	#validate with select query. cursor requires a tuble not string, thats why we have (,)
-	cur.execute("insert into customer (fname,lname,phone,email,username,pwd,dob) values(%s,%s,%s,%s,%s,%s,%s)",(fname,lname,phone,email,uname,pwd,dob))
-	con.commit()
+		#validate with select query. cursor requires a tuble not string, thats why we have (,)
+		cur.execute("insert into customer (fname,lname,phone,email,username,pwd,dob) values(%s,%s,%s,%s,%s,%s,%s)",(fname,lname,phone,email,uname,pwd,dob))
 
-	#fetch the customer id generated
-	cur.execute("select customer_id from customer where username=%s",(uname,))
-	row = cur.fetchone()[0]
+		#fetch the customer id generated
+		cur.execute("select customer_id from customer where username=%s",(uname,))
+		customer_id = cur.fetchone()[0]
 
-	if row==None:
-		messagebox.showerror("Error" , "Customer Id not generated")
-		clearCredentials()
+		#Doing something to get the current date and time
+		now = datetime.now()
+		timeNow = now.strftime('%Y-%m-%d %H:%M:%S')
 
-	else:
-		successMessage = "SignUp Successfull, Your Customer Id is " + str(row) + ". We will Redirect to your Dashboard (To Do), I will close the window for now "
+		cur.execute("insert into accounts (acc_type,customer_id,created_date,balance) values(%s,%s,%s,%s)",("SAVINGS",customer_id,timeNow,"0.0"))
+
+		con.commit()
+
+
+		#fetch the account Id generated
+		cur.execute("select acc_no from accounts where customer_id=%s",(customer_id,))
+		new_account_number = cur.fetchone()[0]
+
+		
+		successMessage = "SignUp Successfull, Your Customer Id is " + str(customer_id) + " and account number is " + str(new_account_number) +". We will Redirect to your Login."
 		messagebox.showinfo("Success" , successMessage)
 		close()
-		customerDashboard.loadDashboard()
+		#customerDashboard.loadDashboard()
+		login.loadLogin()
 
-	#Close the DB connection
-	db.closeDBConnection(con)
+	except mysql.connector.Error as error:
+		con.rollback()
+		messagebox.showerror("Error" , "Customer Id not generated")
+		clearFields()
+
+	finally:
+		#Close the DB connection
+		db.closeDBConnection(con)
+
+
+
+
+
+
+
+
 #----------------------------------
 
 #------To validate--------
@@ -123,7 +161,7 @@ def loadSignupModule():
 	passwordFrame = tk.Frame(signUpWindow,width=300, height=30)
 	passwordFrame.pack_propagate(0)
 	password_label = Label(passwordFrame, text=" Password * ", font="Calibri 16")
-	password_entry = Entry(passwordFrame, textvariable=passwordEntered)
+	password_entry = Entry(passwordFrame, textvariable=passwordEntered, show='*')
 	passwordFrame.grid(row=4,column=0,sticky="w")
 	password_label.pack(side=LEFT)
 	password_entry.pack(side=RIGHT)
@@ -196,11 +234,26 @@ def loadSignupModule():
 	clearButton.pack(side=RIGHT)
 
 
+	#BlankRow
+	blankRow = Label(signUpWindow,text=" ", font="Calibri 12")
+	blankRow.grid(row=12,column=0,sticky="e")
+
+
+	#Signup Frame, Lable and Button
+	loginFrame = tk.Frame(signUpWindow)
+	loginButton = Button(loginFrame,text=" Back to Login ", font="Calibri 12", command = switchToLogin)
+	loginFrame.grid(row=13,column=0,sticky="w")
+	loginButton.pack(side=LEFT);
+
+
 	# Seperator object
 	line_style = ttk.Style()
 	line_style.configure("Line.TSeparator", background="#FF0000")
 	separator = ttk.Separator(signUpWindow, orient='horizontal', style="Line.TSeparator")
 	separator.grid(row=12,column=0,columnspan=6, sticky='ew', pady=10)
+
+
+
 
 
 

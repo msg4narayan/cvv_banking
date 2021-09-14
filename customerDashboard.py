@@ -24,10 +24,38 @@ def clearFields():
 #------To validate--------
 def loadDashboard(uname):
 	print("--- Entering dashboard module for ---"+str(uname))
+
+
+	#get a DBConnection
+	con = db.getDBConnection()
+	cur = con.cursor()
+
+	#fetch the customer name generated
+	cur.execute("select concat(fname,' ',lname) as customer_name, c.customer_id, a.acc_no from customer c,accounts a where c.username=%s and c.customer_id = a.customer_id",(uname,) )
+	customer_records = cur.fetchall()
+
+	customer_name = ""
+	customer_id = 0
+	acc_no = 0
+
+	print("Total rows are:  ", len(customer_records))
+
+	for row in customer_records:
+		 customer_name = row[0]
+		 customer_id = row[1]
+		 acc_no = row[2]
+	
+
+	# #fetch the customer account numbers
+	# cur.execute("select acc_no from accounts where customer_id=%s",(customer_id,))
+	# account_number = cur.fetchone()[1]
+	# print("--- Customer Account Number ---"+str(account_number))
+
+
 	
 	global customerDashboardWindow
 	customerDashboardWindow = tk.Tk()
-	customerDashboardWindow.title("Welcome to Financial Crimes | Dashboard")
+	customerDashboardWindow.title("Welcome to Financial Crimes | Customer Dashboard")
 	customerDashboardWindow.state("zoomed")
 	customerDashboardWindow.columnconfigure(1, weight=6)
 
@@ -47,13 +75,74 @@ def loadDashboard(uname):
 
 	#Error and Message Row
 	messageFrame = tk.Frame(customerDashboardWindow)
-	messageText = Label(messageFrame, text="Welcome   ", font="Calibri 16")
+	messageText = Label(messageFrame, text="Hi "+ customer_name, font="Calibri 16")
 	messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
-	messageFrame.grid(row=2,column=0,sticky="w")
+	messageFrame.grid(row=2,column=4,sticky="w")
 	messageText.pack(side=TOP)
 	messageSpacer.pack(side=TOP)
 
+
+	customer_account_numbers = [
+    ""+str(acc_no),
+	]
+
+
+
+	#form fields
+	accNumberSelected = StringVar()
+	accNumberSelected.set(customer_account_numbers[0])
+
+
+
+	#Customer Menu
+	menuFrame = tk.Frame(customerDashboardWindow,width=350, height=100)
+	menuSpacer_0 = Label(menuFrame, text="  ", font="Calibri 16")
+	menuSpacer_1 = Label(menuFrame, text="  ", font="Calibri 16")
+	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
+	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
+	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
+	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
+	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12")
+
+
+	menuFrame.grid(row=3,column=0,sticky="w")
+	menuSpacer_0.pack(side=LEFT)
+	depositsButton.pack(side=LEFT)
+	menuSpacer_1.pack(side=LEFT)
+	reportsButton.pack(side=LEFT)
+	menuSpacer_2.pack(side=LEFT)
+	fundTransferButton.pack(side=LEFT)
+	menuSpacer_3.pack(side=LEFT)
+	billPayButton.pack(side=LEFT)
+
+	#BlankRow
+	blankRow_1 = Label(customerDashboardWindow,text=" ", font="Calibri 12")
+	blankRow_1.grid(row=4,column=0,sticky="e")
+
+	#Instruction
+	instructionLabel = Label(customerDashboardWindow,text="   Select an account number and click on the action above ", font="Calibri 12")
+	instructionLabel.grid(row=5,column=0,sticky="w")
+
+	#BlankRow
+	blankRow_2 = Label(customerDashboardWindow,text=" ", font="Calibri 12")
+	blankRow_2.grid(row=6,column=0,sticky="e")
+
+
+
 	
+
+	
+	#Account Number Selection
+	accountNumberFrame = tk.Frame(customerDashboardWindow,width=300, height=30)
+	accountNumberFrame.pack_propagate(0)
+	accnumber_label = Label(accountNumberFrame, text="   Account Number * ", font="Calibri 16")
+	#accountNumber_entry = Entry(accountNumberFrame, textvariable=accNumberSelected)
+	drop = OptionMenu( accountNumberFrame , accNumberSelected , *customer_account_numbers )
+	accountNumberFrame.grid(row=7,column=0,sticky="w")
+	accnumber_label.pack(side=LEFT)
+	#accountNumber_entry.pack(side=RIGHT)
+	drop.pack(side=RIGHT)
 
 	
 
