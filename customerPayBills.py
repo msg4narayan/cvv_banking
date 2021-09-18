@@ -8,6 +8,7 @@ import mysql
 from datetime import datetime
 import accountStatements
 import customerDeposits
+import login
 
 customerPayBillsWindow = ""
 
@@ -24,6 +25,11 @@ def clearFields():
 	
 #----------------------------------
 
+def logout():
+	print("--- Entering logout()")
+	close()
+	login.loadLogin()
+
 #--- navigate to dashboard -----
 def switchToDashboard(uname):
 	print("--- Entering switchToDashboard() ---" + uname)
@@ -37,6 +43,13 @@ def switchTodeposit(accNo,uname, customer_id):
 	print("--- Entering switchTodeposit() ---" + str(customer_id))
 	close()
 	customerDeposits.loadDeposits(accNo,uname,customer_id)
+
+def switchToStatements(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	accountStatements.loadDefaultStatement(accNo,uname,customer_id)
 
 
 #------To submitBillPay--------
@@ -60,6 +73,10 @@ def submitBillPay(billType, billNumber, billAmount,acc_no,uname,customer_id):
 		cur.execute("select balance from accounts where acc_no=%s",(acc_no,))
 		balance = cur.fetchone()[0]
 
+		#check if sufficient balance available.
+		assert(float(balance) > float(billAmount)),"Insufficient Balance"
+		
+
 		balance = balance - int(billAmount)
 		
 		print("--- Entering confirmDeposit new balance is ---"+str(balance))
@@ -68,7 +85,7 @@ def submitBillPay(billType, billNumber, billAmount,acc_no,uname,customer_id):
 		cur.execute("update accounts set balance=%s where acc_no = %s",(balance,acc_no))
 
 		#making to -ve
-		billAmount = (-1) * int(billAmount)
+		billAmount = (-1) * float(billAmount)
 		print("--- Negative Bill Amount :: "+str(billAmount))
 
 
@@ -92,7 +109,10 @@ def submitBillPay(billType, billNumber, billAmount,acc_no,uname,customer_id):
 		messagebox.showerror("Error" , "Transaction Failed")
 		clearFields()	
 
-	
+	except Exception as e:
+		con.rollback()
+		messagebox.showerror("Error" , "Transaction Failed, Insufficient Balance")
+		clearFields()
 
 	finally:
 		#Close the DB connection
@@ -150,10 +170,14 @@ def loadPayBills(acc_no,uname,customer_id):
 	#Error and Message Row
 	messageFrame = tk.Frame(customerPayBillsWindow)
 	messageText = Label(messageFrame, text="Hi "+ customer_name, font="Calibri 16")
-	messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
-	messageFrame.grid(row=2,column=4,sticky="w")
-	messageText.pack(side=TOP)
-	messageSpacer.pack(side=TOP)
+	messageSpacer_0 = Label(messageFrame, text="  ", font="Calibri 16")
+	messageSpacer_1 = Label(messageFrame, text="  ", font="Calibri 16")
+	logoutButton = Button(messageFrame,text=" Logout ", font="Calibri 12",command=lambda: logout())
+	messageFrame.grid(row=2,column=4,sticky="e")
+	messageText.pack(side=LEFT)
+	messageSpacer_0.pack(side=LEFT)
+	logoutButton.pack(side=LEFT)
+	messageSpacer_1.pack(side=LEFT)
 
 
 
@@ -165,8 +189,8 @@ def loadPayBills(acc_no,uname,customer_id):
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(acc_no, uname, customer_id))
-	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
-	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(acc_no, uname, customer_id))
+	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
 
 
 
@@ -178,7 +202,7 @@ def loadPayBills(acc_no,uname,customer_id):
 	menuSpacer_2.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
-	fundTransferButton.pack(side=LEFT)
+	#fundTransferButton.pack(side=LEFT)
 	
 
 

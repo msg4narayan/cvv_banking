@@ -7,6 +7,8 @@ import customerDashboard
 import mysql
 from datetime import datetime
 import accountStatements
+import customerPayBills
+import login
 
 customerDepositWindow = ""
 
@@ -23,11 +25,30 @@ def clearFields():
 	
 #----------------------------------
 
+def logout():
+	print("--- Entering logout()")
+	close()
+	login.loadLogin()
+
 #--- navigate to dashboard -----
 def switchToDashboard(uname):
 	print("--- Entering switchToDashboard() ---" + uname)
 	close()
 	customerDashboard.loadDashboard(uname)
+
+def switchToStatements(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	accountStatements.loadDefaultStatement(accNo,uname,customer_id)
+
+def switchToPayBills(accNo,uname, customer_id):
+	print("--- Entering switchToPayBills() ---" + accNo)
+	print("--- Entering switchToPayBills() ---" + uname)
+	print("--- Entering switchToPayBills() ---" + str(customer_id))
+	close()
+	customerPayBills.loadPayBills(accNo,uname,customer_id)
 
 
 #------To deposit--------
@@ -126,10 +147,14 @@ def loadDeposits(acc_no,uname,customer_id):
 	#Error and Message Row
 	messageFrame = tk.Frame(customerDepositWindow)
 	messageText = Label(messageFrame, text="Hi "+ customer_name, font="Calibri 16")
-	messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
-	messageFrame.grid(row=2,column=4,sticky="w")
-	messageText.pack(side=TOP)
-	messageSpacer.pack(side=TOP)
+	messageSpacer_0 = Label(messageFrame, text="  ", font="Calibri 16")
+	messageSpacer_1 = Label(messageFrame, text="  ", font="Calibri 16")
+	logoutButton = Button(messageFrame,text=" Logout ", font="Calibri 12",command=lambda: logout())
+	messageFrame.grid(row=2,column=4,sticky="e")
+	messageText.pack(side=LEFT)
+	messageSpacer_0.pack(side=LEFT)
+	logoutButton.pack(side=LEFT)
+	messageSpacer_1.pack(side=LEFT)
 
 
 
@@ -140,9 +165,9 @@ def loadDeposits(acc_no,uname,customer_id):
 	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
-	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
-	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
-	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12")
+	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(acc_no, uname, customer_id))
+	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(acc_no, uname, customer_id))
 
 
 	menuFrame.grid(row=3,column=0,sticky="w")
@@ -151,7 +176,7 @@ def loadDeposits(acc_no,uname,customer_id):
 	menuSpacer_1.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	fundTransferButton.pack(side=LEFT)
+	#fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
 

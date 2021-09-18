@@ -6,6 +6,7 @@ import util
 import customerDeposits
 import accountStatements
 import customerPayBills
+import login
 
 customerDashboardWindow = ""
 
@@ -46,6 +47,10 @@ def switchToPayBills(accNo,uname, customer_id):
 	close()
 	customerPayBills.loadPayBills(accNo,uname,customer_id)
 
+def logout():
+	print("--- Entering logout()")
+	close()
+	login.loadLogin()
 
 
 #------To validate--------
@@ -104,10 +109,16 @@ def loadDashboard(uname):
 	#Error and Message Row
 	messageFrame = tk.Frame(customerDashboardWindow)
 	messageText = Label(messageFrame, text="Hi "+ customer_name, font="Calibri 16")
-	messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
-	messageFrame.grid(row=2,column=4,sticky="w")
-	messageText.pack(side=TOP)
-	messageSpacer.pack(side=TOP)
+	messageSpacer_0 = Label(messageFrame, text="  ", font="Calibri 16")
+	messageSpacer_1 = Label(messageFrame, text="  ", font="Calibri 16")
+	logoutButton = Button(messageFrame,text=" Logout ", font="Calibri 12",command=lambda: logout())
+	messageFrame.grid(row=2,column=4,sticky="e")
+	messageText.pack(side=LEFT)
+	messageSpacer_0.pack(side=LEFT)
+	logoutButton.pack(side=LEFT)
+	messageSpacer_1.pack(side=LEFT)
+
+
 
 
 	customer_account_numbers = [
