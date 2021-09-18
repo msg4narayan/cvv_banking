@@ -3,6 +3,8 @@ from tkinter import *
 from tkinter import ttk,messagebox
 import db
 import util
+import customerDeposits
+import accountStatements
 
 customerDashboardWindow = ""
 
@@ -18,6 +20,22 @@ def clearFields():
 	print("--- Entering clearFields() ---")
 	
 #----------------------------------
+
+
+#--- navigate to deposit -----
+def switchTodeposit(accNo,uname, customer_id):
+	print("--- Entering switchTodeposit() ---" + accNo)
+	print("--- Entering switchTodeposit() ---" + uname)
+	print("--- Entering switchTodeposit() ---" + str(customer_id))
+	close()
+	customerDeposits.loadDeposits(accNo,uname,customer_id)
+
+def switchToStatements(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	accountStatements.loadDefaultStatement(accNo,uname,customer_id)
 
 
 
@@ -51,7 +69,8 @@ def loadDashboard(uname):
 	# account_number = cur.fetchone()[1]
 	# print("--- Customer Account Number ---"+str(account_number))
 
-
+	#Close the DB connection
+	db.closeDBConnection(con)
 	
 	global customerDashboardWindow
 	customerDashboardWindow = tk.Tk()
@@ -100,8 +119,8 @@ def loadDashboard(uname):
 	menuSpacer_1 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
-	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
-	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
+	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(accNumberSelected.get().strip(), uname, customer_id))
+	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(accNumberSelected.get().strip(), uname, customer_id))
 	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
 	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12")
 
