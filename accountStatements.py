@@ -7,6 +7,7 @@ import customerDashboard
 import mysql
 from datetime import datetime
 import customerPayBills
+import customerDeposits
 
 accountStatementWindow = ""
 
@@ -36,6 +37,15 @@ def loadCustomStatement(uname):
 	print("--- Entering switchToDashboard() ---" + uname)
 	close()
 	customerDashboard.loadDashboard(uname)
+
+
+#--- navigate to deposit -----
+def switchTodeposit(accNo,uname, customer_id):
+	print("--- Entering switchTodeposit() ---" + accNo)
+	print("--- Entering switchTodeposit() ---" + uname)
+	print("--- Entering switchTodeposit() ---" + str(customer_id))
+	close()
+	customerDeposits.loadDeposits(accNo,uname,customer_id)
 
 
 def switchToPayBills(accNo,uname, customer_id):
@@ -112,7 +122,7 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
-	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
+	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(acc_no, uname, customer_id))
 	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
 	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(acc_no, uname, customer_id))
 
