@@ -33,6 +33,9 @@ def loadDashboard(uname):
 	#fetch the customer id generated
 	cur.execute("select concat(fname,' ',lname) as customer_name from customer where username=%s",(uname,))
 	customer_name = cur.fetchone()[0]
+
+	#Close the DB connection
+	db.closeDBConnection(con)
 	
 	global bankAdminWindow
 	bankAdminWindow = tk.Tk()

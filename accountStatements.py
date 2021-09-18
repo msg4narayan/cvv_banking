@@ -6,6 +6,7 @@ import util
 import customerDashboard
 import mysql
 from datetime import datetime
+import customerPayBills
 
 accountStatementWindow = ""
 
@@ -37,6 +38,13 @@ def loadCustomStatement(uname):
 	customerDashboard.loadDashboard(uname)
 
 
+def switchToPayBills(accNo,uname, customer_id):
+	print("--- Entering switchToPayBills() ---" + accNo)
+	print("--- Entering switchToPayBills() ---" + uname)
+	print("--- Entering switchToPayBills() ---" + str(customer_id))
+	close()
+	customerPayBills.loadPayBills(accNo,uname,customer_id)
+
 #------To viewstatement--------
 def loadDefaultStatement(acc_no,uname,customer_id):
 	print("--- Entering viewStatement module for ---"+str(uname))
@@ -60,7 +68,7 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	transactions = cur.fetchall()
 	print("Number of Transactions : ---- " + str(len(transactions)))
 
-	#load last 10 transactions for the user
+	#latest balance for an user
 	cur.execute("select balance from accounts where acc_no=%s",(acc_no,))
 	latestBalance = [balancerow[0] for balancerow in cur.fetchall()]
 
@@ -105,8 +113,8 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
-	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
-	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12")
+	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(acc_no, uname, customer_id))
 
 
 	menuFrame.grid(row=3,column=0,sticky="w")
@@ -115,7 +123,7 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	menuSpacer_1.pack(side=LEFT)
 	depositsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	fundTransferButton.pack(side=LEFT)
+	#fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
 
@@ -173,16 +181,19 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 
 	#Load Statements (Iterate over the transactions)
 	# Add a Treeview widget
+	s = ttk.Style()
+	s.theme_use('clam')
+	s.configure('Treeview.Heading', font="Calibri 14")
 	tranSpacer_0 = Label(menuFrame, text="  ", font="Calibri 12")
 	transactionFrame = tk.Frame(accountStatementWindow,width=350)
 	tree = ttk.Treeview(transactionFrame, column=("Transaction Name", "Transaction Type", "Date","Amount"), show='headings', height=11)
-	tree.column("# 1", anchor=CENTER)
+	tree.column("# 1")
 	tree.heading("# 1", text="Transaction Name")
-	tree.column("# 2", anchor=CENTER)
+	tree.column("# 2")
 	tree.heading("# 2", text="Transaction Type")
-	tree.column("# 3", anchor=CENTER)
+	tree.column("# 3")
 	tree.heading("# 3", text="Date")
-	tree.column("# 4", anchor=CENTER)
+	tree.column("# 4")
 	tree.heading("# 4", text="Amount")
 	transactionFrame.grid(row=8,column=0,sticky="w", ipadx=75, ipady=20)
 

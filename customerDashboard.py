@@ -5,6 +5,7 @@ import db
 import util
 import customerDeposits
 import accountStatements
+import customerPayBills
 
 customerDashboardWindow = ""
 
@@ -36,6 +37,14 @@ def switchToStatements(accNo,uname, customer_id):
 	print("--- Entering switchToStatements() ---" + str(customer_id))
 	close()
 	accountStatements.loadDefaultStatement(accNo,uname,customer_id)
+
+
+def switchToPayBills(accNo,uname, customer_id):
+	print("--- Entering switchToPayBills() ---" + accNo)
+	print("--- Entering switchToPayBills() ---" + uname)
+	print("--- Entering switchToPayBills() ---" + str(customer_id))
+	close()
+	customerPayBills.loadPayBills(accNo,uname,customer_id)
 
 
 
@@ -121,8 +130,8 @@ def loadDashboard(uname):
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(accNumberSelected.get().strip(), uname, customer_id))
 	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(accNumberSelected.get().strip(), uname, customer_id))
-	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
-	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12")
+	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(accNumberSelected.get().strip(), uname, customer_id))
 
 
 	menuFrame.grid(row=3,column=0,sticky="w")
@@ -131,7 +140,7 @@ def loadDashboard(uname):
 	menuSpacer_1.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	fundTransferButton.pack(side=LEFT)
+	#fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
 
