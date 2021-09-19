@@ -73,7 +73,7 @@ def loadStatementByDate(acc_no,uname,customer_id,fromDate,toDate):
 	#load last 10 transactions for the user
 	transactionSQL = "select * from transaction where acc_no='"+str(acc_no)+"' and (date>='"+str(fromDate)+"' and date<='"+str(toDate)+"') order by date DESC"
 	print(transactionSQL)
-	cur.execute("select * from transaction where acc_no=%s and ((date between %s and %s) or date=%s or date=%s) order by date DESC",(acc_no,str(fromDate),str(toDate),str(fromDate),str(toDate)))
+	cur.execute("select * from transaction where acc_no=%s and (date >= %s AND date <= DATE_ADD(%s, INTERVAL 1 DAY)) order by date DESC",(acc_no,str(fromDate),str(toDate)))
 	transactions = cur.fetchall()
 	print("Number of Transactions : ---- " + str(len(transactions)))
 
