@@ -11,6 +11,8 @@ import customerDeposits
 import login
 from tkcalendar import Calendar, DateEntry
 import accountStatements
+import customerFundTransfer
+
 
 accountStatementWindow = ""
 
@@ -32,6 +34,14 @@ def switchToDashboard(uname):
 	print("--- Entering switchToDashboard() ---" + uname)
 	close()
 	customerDashboard.loadDashboard(uname)
+
+#------To fundTransfer--------
+def switchToFundTransfer(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	customerFundTransfer.loadFundTransfer(accNo,uname,customer_id)		
 
 
 
@@ -124,10 +134,13 @@ def loadStatementByDate(acc_no,uname,customer_id,fromDate,toDate):
 	menuSpacer_1 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
+	menuSpacer_4 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(acc_no, uname, customer_id))
-	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12",command=lambda: switchToFundTransfer(acc_no, uname, customer_id))
 	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(acc_no, uname, customer_id))
+	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(acc_no, uname, customer_id))
+
 
 
 	menuFrame.grid(row=3,column=0,sticky="w")
@@ -136,9 +149,11 @@ def loadStatementByDate(acc_no,uname,customer_id,fromDate,toDate):
 	menuSpacer_1.pack(side=LEFT)
 	depositsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	#fundTransferButton.pack(side=LEFT)
+	fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
+	menuSpacer_4.pack(side=LEFT)
+	reportsButton.pack(side=LEFT)
 
 
 	#BlankRow
@@ -271,7 +286,6 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	print("--- Entering viewStatement module for ---"+str(customer_id))
 
 
-
 	#get a DBConnection
 	con = db.getDBConnection()
 	cur = con.cursor()
@@ -336,7 +350,7 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(acc_no, uname, customer_id))
-	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12",command=lambda: switchToFundTransfer(acc_no, uname, customer_id))
 	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(acc_no, uname, customer_id))
 
 
@@ -346,7 +360,7 @@ def loadDefaultStatement(acc_no,uname,customer_id):
 	menuSpacer_1.pack(side=LEFT)
 	depositsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	#fundTransferButton.pack(side=LEFT)
+	fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
 

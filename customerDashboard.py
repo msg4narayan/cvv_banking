@@ -7,6 +7,7 @@ import customerDeposits
 import accountStatements
 import customerPayBills
 import login
+import customerFundTransfer
 
 customerDashboardWindow = ""
 
@@ -39,6 +40,13 @@ def switchToStatements(accNo,uname, customer_id):
 	close()
 	accountStatements.loadDefaultStatement(accNo,uname,customer_id)
 
+def switchToFundTransfer(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	customerFundTransfer.loadFundTransfer(accNo,uname,customer_id)	
+
 
 def switchToPayBills(accNo,uname, customer_id):
 	print("--- Entering switchToPayBills() ---" + accNo)
@@ -53,7 +61,7 @@ def logout():
 	login.loadLogin()
 
 
-#------To validate--------
+#------To load dashboard--------
 def loadDashboard(uname):
 	print("--- Entering dashboard module for ---"+str(uname))
 
@@ -141,7 +149,7 @@ def loadDashboard(uname):
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(accNumberSelected.get().strip(), uname, customer_id))
 	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(accNumberSelected.get().strip(), uname, customer_id))
-	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12",command=lambda: switchToFundTransfer(accNumberSelected.get().strip(), uname, customer_id))
 	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(accNumberSelected.get().strip(), uname, customer_id))
 
 
@@ -151,7 +159,7 @@ def loadDashboard(uname):
 	menuSpacer_1.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	#fundTransferButton.pack(side=LEFT)
+	fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
 

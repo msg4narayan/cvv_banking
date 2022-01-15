@@ -9,6 +9,7 @@ from datetime import datetime
 import accountStatements
 import customerPayBills
 import login
+import customerFundTransfer
 
 customerDepositWindow = ""
 
@@ -58,51 +59,62 @@ def confirmDeposit(depositAmount,acc_no,uname,customer_id):
 	print("--- Entering confirmDeposit module for ---"+str(acc_no))
 	print("--- Entering confirmDeposit module for ---"+str(customer_id))
 
-
-	try:
-
-		#get a DBConnection
-		con = db.getDBConnection()
-		cur = con.cursor()
-
-		#get the latest amount for that user
-		cur.execute("select balance from accounts where acc_no=%s",(acc_no,))
-		balance = cur.fetchone()[0]
-
-		balance = balance + int(depositAmount)
-		print("--- Entering confirmDeposit new balance is ---"+str(balance))
+#------To fundTransfer--------
+def switchToFundTransfer(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	customerFundTransfer.loadFundTransfer(accNo,uname,customer_id)	
 
 
-		cur.execute("update accounts set balance=%s where acc_no = %s",(balance,acc_no))
+	if util.isPositiveNumber(depositAmount):
+		try:
+
+			#get a DBConnection
+			con = db.getDBConnection()
+			cur = con.cursor()
+
+			#get the latest amount for that user
+			cur.execute("select balance from accounts where acc_no=%s",(acc_no,))
+			balance = cur.fetchone()[0]
+
+			balance = balance + int(depositAmount)
+			print("--- Entering confirmDeposit new balance is ---"+str(balance))
 
 
-		#Doing something to get the current date and time
-		now = datetime.now()
-		timeNow = now.strftime('%Y-%m-%d %H:%M:%S')
-
-		cur.execute("insert into transaction (acc_no,trans_name,credit_debit,date,amt,balance) values(%s,%s,%s,%s,%s,%s)", (acc_no,'DEPOSIT','CREDIT',timeNow,depositAmount,balance))
+			cur.execute("update accounts set balance=%s where acc_no = %s",(balance,acc_no))
 
 
-		con.commit()
+			#Doing something to get the current date and time
+			now = datetime.now()
+			timeNow = now.strftime('%Y-%m-%d %H:%M:%S')
 
-		successMessage = "Deposit Successful"
-		messagebox.showinfo("Success" , successMessage)
-		close()
-		accountStatements.loadDefaultStatement(acc_no,uname, customer_id)
+			cur.execute("insert into transaction (acc_no,trans_name,credit_debit,date,amt,balance) values(%s,%s,%s,%s,%s,%s)", (acc_no,'DEPOSIT','CREDIT',timeNow,depositAmount,balance))
+
+
+			con.commit()
+
+			successMessage = "Deposit Successful"
+			messagebox.showinfo("Success" , successMessage)
+			close()
+			accountStatements.loadDefaultStatement(acc_no,uname,customer_id)
+			
+
+		except mysql.connector.Error as error:
+			con.rollback()
+			messagebox.showerror("Error" , "Transaction Failed")
+			clearFields()	
+
 		
 
-	except mysql.connector.Error as error:
-		con.rollback()
-		messagebox.showerror("Error" , "Transaction Failed")
-		clearFields()	
+		finally:
+			#Close the DB connection
+			db.closeDBConnection(con)
 
-	
-
-	finally:
-		#Close the DB connection
-		db.closeDBConnection(con)
-
-
+	else:
+		messagebox.showerror("Error" , "Please enter a positive number")
+				
 
 
 #------To validate--------
@@ -166,7 +178,7 @@ def loadDeposits(acc_no,uname,customer_id):
 	menuSpacer_3 = Label(menuFrame, text="  ", font="Calibri 16")
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
 	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(acc_no, uname, customer_id))
-	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12",command=lambda: switchToFundTransfer(acc_no, uname, customer_id))
 	billPayButton = Button(menuFrame,text=" Pay Bills ", font="Calibri 12",command=lambda: switchToPayBills(acc_no, uname, customer_id))
 
 
@@ -176,7 +188,7 @@ def loadDeposits(acc_no,uname,customer_id):
 	menuSpacer_1.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	#fundTransferButton.pack(side=LEFT)
+	fundTransferButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
 	billPayButton.pack(side=LEFT)
 

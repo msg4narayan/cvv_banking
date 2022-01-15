@@ -3,8 +3,16 @@ from tkinter import *
 from tkinter import ttk,messagebox
 import db
 import util
+import login
+import datetime as dt
 
 bankAdminWindow = ""
+
+
+def logout():
+	print("--- Entering logout()")
+	close()
+	login.loadLogin()
 
 
 def close():
@@ -34,6 +42,16 @@ def loadDashboard(uname):
 	cur.execute("select concat(fname,' ',lname) as customer_name from customer where username=%s",(uname,))
 	customer_name = cur.fetchone()[0]
 
+
+	#load todays transactions
+	transactionSQL = "select * from transaction where date >= CURRENT_DATE AND date <= date_add(curdate(),interval 1 day)"
+	print(transactionSQL)
+	cur.execute("select * from transaction where date >= CURRENT_DATE AND date <= date_add(curdate(),interval 1 day)")
+	transactions = cur.fetchall()
+	print("Number of Transactions : ---- " + str(len(transactions)))
+
+
+
 	#Close the DB connection
 	db.closeDBConnection(con)
 	
@@ -59,11 +77,15 @@ def loadDashboard(uname):
 
 	#Error and Message Row
 	messageFrame = tk.Frame(bankAdminWindow)
-	messageText = Label(messageFrame, text="Hi "+ customer_name, font="Calibri 16")
-	messageSpacer = Label(messageFrame, text="  ", font="Calibri 16")
-	messageFrame.grid(row=2,column=4,sticky="w")
-	messageText.pack(side=TOP)
-	messageSpacer.pack(side=TOP)
+	messageText = Label(messageFrame, text="Hi "+ customer_name, font="Calibri 14")
+	#messageSpacer_0 = Label(messageFrame, text="  ", font="Calibri 14")
+	messageSpacer_1 = Label(messageFrame, text="  ", font="Calibri 14")
+	logoutButton = Button(messageFrame,text=" Logout ", font="Calibri 12",command=lambda: logout())
+	messageFrame.grid(row=2,column=4,sticky="e")
+	messageText.pack(side=LEFT)
+	#messageSpacer_0.pack(side=LEFT)
+	logoutButton.pack(side=LEFT)
+	messageSpacer_1.pack(side=LEFT)
 
 
 
@@ -71,19 +93,63 @@ def loadDashboard(uname):
 	menuFrame = tk.Frame(bankAdminWindow,width=350, height=100)
 	menuSpacer_1 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
-	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
-	reportsButton = Button(menuFrame,text=" Reports ", font="Calibri 12")
+	ViewCustomerDetailsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
+	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
 	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
 
 
 	menuFrame.grid(row=3,column=0,sticky="w")
-	depositsButton.pack(side=LEFT)
+	ViewCustomerDetailsButton.pack(side=LEFT)
 	menuSpacer_1.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_2.pack(side=LEFT)
-	fundTransferButton.pack(side=LEFT)
+	#fundTransferButton.pack(side=LEFT)
 
 
+	#BlankRow
+	blankRow = Label(bankAdminWindow,text=" ", font="Calibri 12")
+	blankRow.grid(row=6,column=0,sticky="e",columnspan=6)
+
+
+	#Statement for today
+	date = dt.datetime.now()
+	dateFrame = tk.Frame(bankAdminWindow,width=350, height=20)
+	dateSpace_0 = Label(dateFrame, text="  ", font="Calibri 12")
+	dateText = Label(dateFrame, text="Statement for date :", font="Calibri 12")
+	dateText_1 = Label(dateFrame,font="Calibri 12", bg="yellow", text=f"{date:%A, %B %d, %Y}")
+	dateText.pack(side=LEFT)
+	dateSpace_0.pack(side=LEFT)
+	dateText_1.pack(side=LEFT)
+	dateFrame.grid(row=7,column=0,sticky="w",ipadx=75)
+
+
+	#Load Statements (Iterate over the transactions)
+	# Add a Treeview widget
+	s = ttk.Style()
+	s.theme_use('clam')
+	s.configure('Treeview.Heading', font="Calibri 14")
+	tranSpacer_0 = Label(menuFrame, text="  ", font="Calibri 12")
+	transactionFrame = tk.Frame(bankAdminWindow,width=300)
+	tree = ttk.Treeview(transactionFrame, column=("Transaction Name", "Transaction Type", "Account Number", "Date","Amount"), show='headings', height=11)
+	tree.column("# 1")
+	tree.heading("# 1", text="Trans. Name")
+	tree.column("# 2")
+	tree.heading("# 2", text="Trans. Type")
+	tree.column("# 3")
+	tree.heading("# 3", text="Acc. Number")
+	tree.column("# 4")
+	tree.heading("# 4", text="Date")
+	tree.column("# 5")
+	tree.heading("# 5", text="Amount")
+
+	transactionFrame.grid(row=8,column=0,sticky="e", ipadx=20, ipady=20)
+
+	
+	for row in transactions:
+		tree.insert('', 'end', text="1", values=(row[2],row[3],row[1],row[4],row[5]))	
+
+	tranSpacer_0.pack(side=LEFT)
+	tree.pack()
 
 
 

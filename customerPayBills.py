@@ -9,6 +9,7 @@ from datetime import datetime
 import accountStatements
 import customerDeposits
 import login
+import customerFundTransfer
 
 customerPayBillsWindow = ""
 
@@ -50,6 +51,15 @@ def switchToStatements(accNo,uname, customer_id):
 	print("--- Entering switchToStatements() ---" + str(customer_id))
 	close()
 	accountStatements.loadDefaultStatement(accNo,uname,customer_id)
+
+
+#------To fundTransfer--------
+def switchToFundTransfer(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	customerFundTransfer.loadFundTransfer(accNo,uname,customer_id)	
 
 
 #------To submitBillPay--------
@@ -190,7 +200,7 @@ def loadPayBills(acc_no,uname,customer_id):
 	dashboardButton = Button(menuFrame,text=" Dashboard ", font="Calibri 12",command=lambda: switchToDashboard(uname))
 	depositsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12",command=lambda: switchTodeposit(acc_no, uname, customer_id))
 	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12",command=lambda: switchToStatements(acc_no, uname, customer_id))
-	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12",command=lambda: switchToFundTransfer(acc_no, uname, customer_id))
 
 
 
@@ -202,7 +212,7 @@ def loadPayBills(acc_no,uname,customer_id):
 	menuSpacer_2.pack(side=LEFT)
 	reportsButton.pack(side=LEFT)
 	menuSpacer_3.pack(side=LEFT)
-	#fundTransferButton.pack(side=LEFT)
+	fundTransferButton.pack(side=LEFT)
 	
 
 

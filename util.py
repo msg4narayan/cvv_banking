@@ -10,6 +10,13 @@ def encrypt(rawString):
 def isNumber(inputData):
 	return (bool(re.match('^[0-9]+$', str(inputData))))
 
+#To check the input is only positive number
+def isPositiveNumber(inputData):
+	inputNumber = float(inputData)
+	if inputNumber > 0:
+		return bool(True)
+	else:		
+		return bool(False)
 
 #To check the input is valid email
 def isValidEmail(email):

@@ -7,6 +7,7 @@ import util
 import customerDashboard
 import bankadmin
 
+
 def close():
 	indexWindow.destroy()	
 
@@ -69,6 +70,7 @@ def switchToSignUp():
 	print("--- Entering signup function ---")
 	close()
 	signup.loadSignupModule()
+	
 
 
 #-------------------------------UI Code ----------------------------------
