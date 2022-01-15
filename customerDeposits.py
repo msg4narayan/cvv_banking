@@ -51,6 +51,14 @@ def switchToPayBills(accNo,uname, customer_id):
 	close()
 	customerPayBills.loadPayBills(accNo,uname,customer_id)
 
+#------To fundTransfer--------
+def switchToFundTransfer(accNo,uname, customer_id):
+	print("--- Entering switchToStatements() ---" + accNo)
+	print("--- Entering switchToStatements() ---" + uname)
+	print("--- Entering switchToStatements() ---" + str(customer_id))
+	close()
+	customerFundTransfer.loadFundTransfer(accNo,uname,customer_id)		
+
 
 #------To deposit--------
 def confirmDeposit(depositAmount,acc_no,uname,customer_id):	
@@ -58,14 +66,6 @@ def confirmDeposit(depositAmount,acc_no,uname,customer_id):
 	print("--- Entering confirmDeposit module for ---"+str(uname))
 	print("--- Entering confirmDeposit module for ---"+str(acc_no))
 	print("--- Entering confirmDeposit module for ---"+str(customer_id))
-
-#------To fundTransfer--------
-def switchToFundTransfer(accNo,uname, customer_id):
-	print("--- Entering switchToStatements() ---" + accNo)
-	print("--- Entering switchToStatements() ---" + uname)
-	print("--- Entering switchToStatements() ---" + str(customer_id))
-	close()
-	customerFundTransfer.loadFundTransfer(accNo,uname,customer_id)	
 
 
 	if util.isPositiveNumber(depositAmount):

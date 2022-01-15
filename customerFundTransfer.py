@@ -88,47 +88,50 @@ def confirmFundTransfer(depositAmount,source_acc_no,dest_acc_no,uname,source_cus
 				#check if sufficient balance available in source account?
 				if(float(customer_balance) < float(depositAmount)):
 					messagebox.showerror("Error" , "No sufficient balance in your account to make this transfer")
+
+				else:	
 			
-				destination_account_number = 0
-				destination_account_balance = 0.0	
-				#Check if the destination account number is valid
-				cur.execute("select a.acc_no,a.balance from accounts a,customer c where c.customer_id=a.customer_id and a.acc_no=%s and c.username!='admin'",(dest_acc_no,))
-				records = cur.fetchall()
+					destination_account_number = 0
+					destination_account_balance = 0.0	
+					#Check if the destination account number is valid
+					cur.execute("select a.acc_no,a.balance from accounts a,customer c where c.customer_id=a.customer_id and a.acc_no=%s and c.username!='admin'",(dest_acc_no,))
+					records = cur.fetchall()
 
-				#print("--- Length of records : " + str(len(records))
+					#print("--- Length of records : " + str(len(records))
 
-				for rows in records:
-					destination_account_balance = float(rows[1])
-					print("--- Entering confirmFundTransfer destination_account_balance : " + str(destination_account_balance))
+					for rows in records:
+						destination_account_balance = float(rows[1])
+						print("--- Entering confirmFundTransfer destination_account_balance : " + str(destination_account_balance))
 
-				if len(records)==1:
-					#Do the actual fund transfer
-					updated_destination_account_balance = float(destination_account_balance) + float(depositAmount)
-					updated_source_account_balance = float(customer_balance) - float(depositAmount)
-					print("---- updated_destination_account_balance ---" + str(updated_destination_account_balance))
-					print("---- updated_source_account_balance ---" + str(updated_source_account_balance))
-					cur.execute("update accounts set balance=%s where acc_no = %s",(updated_destination_account_balance,dest_acc_no))
-					cur.execute("update accounts set balance=%s where acc_no = %s",(updated_source_account_balance,source_acc_no))
-					#Doing something to get the current date and time
-					now = datetime.now()
-					timeNow = now.strftime('%Y-%m-%d %H:%M:%S')
-					negativeDepositAmount = (-1) * float(depositAmount)
+					if len(records)==1:
+						#Do the actual fund transfer
+						updated_destination_account_balance = float(destination_account_balance) + float(depositAmount)
+						updated_source_account_balance = float(customer_balance) - float(depositAmount)
+						print("---- updated_destination_account_balance ---" + str(updated_destination_account_balance))
+						print("---- updated_source_account_balance ---" + str(updated_source_account_balance))
+						cur.execute("update accounts set balance=%s where acc_no = %s",(updated_destination_account_balance,dest_acc_no))
+						cur.execute("update accounts set balance=%s where acc_no = %s",(updated_source_account_balance,source_acc_no))
+						#Doing something to get the current date and time
+						now = datetime.now()
+						timeNow = now.strftime('%Y-%m-%d %H:%M:%S')
+						negativeDepositAmount = (-1) * float(depositAmount)
 
-					cur.execute("insert into transaction (acc_no,trans_name,credit_debit,date,amt,balance) values(%s,%s,%s,%s,%s,%s)", (source_acc_no,'TRANSFER','DEBIT',timeNow,negativeDepositAmount,updated_source_account_balance))
-					cur.execute("insert into transaction (acc_no,trans_name,credit_debit,date,amt,balance) values(%s,%s,%s,%s,%s,%s)", (dest_acc_no,'TRANSFER','CREDIT',timeNow,depositAmount,updated_destination_account_balance))
+						cur.execute("insert into transaction (acc_no,trans_name,credit_debit,date,amt,balance) values(%s,%s,%s,%s,%s,%s)", (source_acc_no,'TRANSFER','DEBIT',timeNow,negativeDepositAmount,updated_source_account_balance))
+						cur.execute("insert into transaction (acc_no,trans_name,credit_debit,date,amt,balance) values(%s,%s,%s,%s,%s,%s)", (dest_acc_no,'TRANSFER','CREDIT',timeNow,depositAmount,updated_destination_account_balance))
 
-					con.commit()
-					messagebox.showinfo("Success" , "Transfer Successful")
-					close()
-					print("--- To enter loadCustomStatement() ---" + uname)
-					print("--- To enter loadCustomStatement() ---" + str(source_acc_no))
-					print("--- To enter loadCustomStatement() ---" + str(source_customer_id))
-					accountStatements.loadDefaultStatement(source_acc_no,uname,source_customer_id)
-				else:
-					messagebox.showerror("Error" , "Destination Account Number Invalid")	
+						con.commit()
+						messagebox.showinfo("Success" , "Transfer Successful")
+						close()
+						print("--- To enter loadCustomStatement() ---" + uname)
+						print("--- To enter loadCustomStatement() ---" + str(source_acc_no))
+						print("--- To enter loadCustomStatement() ---" + str(source_customer_id))
+						accountStatements.loadDefaultStatement(source_acc_no,uname,source_customer_id)
+					else:
+						messagebox.showerror("Error" , "Destination Account Number Invalid")	
 
 		else:
 			print("--- Entering confirmFundTransfer Customer_id -  Conditions failed")
+			messagebox.showerror("Error" , "Please enter valid data")
 	except:
 		messagebox.showerror("Error" , "Please enter valid data")
 	finally:
