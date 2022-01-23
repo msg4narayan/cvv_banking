@@ -5,6 +5,7 @@ import db
 import util
 import login
 import datetime as dt
+import bankadminViewCustomer
 
 bankAdminWindow = ""
 
@@ -26,6 +27,11 @@ def clearFields():
 	print("--- Entering clearFields() ---")
 	
 #----------------------------------
+
+
+def switchToadminViewCustomerDetails():
+	close()
+	bankadminViewCustomer.loadCustomers()	
 
 
 
@@ -93,16 +99,16 @@ def loadDashboard(uname):
 	menuFrame = tk.Frame(bankAdminWindow,width=350, height=100)
 	menuSpacer_1 = Label(menuFrame, text="  ", font="Calibri 16")
 	menuSpacer_2 = Label(menuFrame, text="  ", font="Calibri 16")
-	ViewCustomerDetailsButton = Button(menuFrame,text=" Deposits ", font="Calibri 12")
-	reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
-	fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
+	ViewCustomerDetailsButton = Button(menuFrame,text=" View Customer Details ", font="Calibri 12",command=lambda: switchToadminViewCustomerDetails())
+	#reportsButton = Button(menuFrame,text=" View Statement ", font="Calibri 12")
+	#fundTransferButton = Button(menuFrame,text=" Fund Transfer ", font="Calibri 12")
 
 
 	menuFrame.grid(row=3,column=0,sticky="w")
+	menuSpacer_2.pack(side=LEFT)
 	ViewCustomerDetailsButton.pack(side=LEFT)
 	menuSpacer_1.pack(side=LEFT)
-	reportsButton.pack(side=LEFT)
-	menuSpacer_2.pack(side=LEFT)
+	#reportsButton.pack(side=LEFT)
 	#fundTransferButton.pack(side=LEFT)
 
 
